@@ -1,0 +1,146 @@
+# RebelCALC Configuration
+
+# General settings
+general:
+  version: 0.1.0
+  log_level: info
+  log_file: logs/rebelcalc.log
+  history_file: .rebelcalc_history
+  max_history: 1000
+
+# UI settings
+ui:
+  theme: default
+  prompt: "> "
+  result_prefix: "Result: "
+  error_prefix: "Error: "
+  show_banner: true
+  color_enabled: true
+  
+  # Themes
+  themes:
+    default:
+      background: black
+      foreground: white
+      prompt: cyan
+      result: green
+      error: red
+      warning: yellow
+      info: blue
+      
+    light:
+      background: white
+      foreground: black
+      prompt: blue
+      result: green
+      error: red
+      warning: orange
+      info: blue
+      
+    dark:
+      background: black
+      foreground: white
+      prompt: cyan
+      result: green
+      error: red
+      warning: yellow
+      info: blue
+
+# Calculator settings
+calculator:
+  precision: 15
+  scientific_notation_threshold: 1e6
+  default_variable_value: 0.0
+  
+  # Built-in constants
+  constants:
+    pi: 3.14159265358979323846
+    e: 2.71828182845904523536
+    phi: 1.61803398874989484820
+    gamma: 0.57721566490153286061
+    
+  # Function aliases
+  function_aliases:
+    ln: log
+    lg: log10
+    arcsin: asin
+    arccos: acos
+    arctan: atan
+
+# Symbolic engine settings
+symbolic:
+  simplify_results: true
+  expand_results: false
+  factor_results: false
+  max_iterations: 100
+  timeout_ms: 5000
+
+# Numeric solver settings
+numeric:
+  tolerance: 1e-10
+  max_iterations: 1000
+  timeout_ms: 5000
+  
+  # Integration settings
+  integration:
+    method: adaptive_simpson
+    points: 1000
+    
+  # Root finding settings
+  root_finding:
+    method: newton
+    initial_guess: 0.0
+    
+  # Optimization settings
+  optimization:
+    method: bfgs
+    initial_step: 0.1
+
+# Lua engine settings
+lua:
+  script_dir: scripts
+  auto_load_scripts:
+    - init.lua
+    - utils.lua
+  
+  # Security settings
+  security:
+    allow_file_io: false
+    allow_system_calls: false
+    allow_network: false
+    memory_limit_mb: 100
+    execution_time_limit_ms: 5000
+
+# Python engine settings (future)
+python:
+  enabled: false
+  interpreter: python3
+  script_dir: scripts/python
+  auto_load_scripts:
+    - init.py
+    - utils.py
+  
+  # Security settings
+  security:
+    allow_file_io: false
+    allow_system_calls: false
+    allow_network: false
+    memory_limit_mb: 100
+    execution_time_limit_ms: 5000
+
+# Integration settings
+integration:
+  rebelcad:
+    enabled: false
+    host: localhost
+    port: 8080
+    
+  rebelengine:
+    enabled: false
+    host: localhost
+    port: 8081
+    
+  rebelsim:
+    enabled: false
+    host: localhost
+    port: 8082
