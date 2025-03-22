@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RebelCALC Plot3D Demo</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .plot-container {
+            margin-bottom: 30px;
+        }
+        .description {
+            margin-bottom: 15px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>RebelCALC Plot3D Demo</h1>
+        <p>This demo showcases the 3D visualization capabilities implemented in the Plot3D class.</p>
+        
+        <div class="plot-container">
+            <h2>Sinc Function (Wireframe Style)</h2>
+            <p class="description">This plot shows the sinc function r = sin(sqrt(x^2 + y^2))/sqrt(x^2 + y^2) with a wireframe style.</p>
+            <div id="plot1" style="width:100%;height:500px;"></div>
+        </div>
+        
+        <div class="plot-container">
+            <h2>3D Spiral (Scatter Plot)</h2>
+            <p class="description">This plot shows a 3D spiral with points colored by their Z value.</p>
+            <div id="plot2" style="width:100%;height:500px;"></div>
+        </div>
+        
+        <div class="plot-container">
+            <h2>Surface Style Comparison</h2>
+            <p class="description">This plot shows the sinc function with different surface styles: solid, wireframe, points, and contour.</p>
+            <div id="plot3" style="width:100%;height:500px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Generate sinc function data
+        function generateSincData(xRange, yRange, resolution) {
+            const x = [];
+            const y = [];
+            const z = [];
+            
+            const xStep = (xRange[1] - xRange[0]) / (resolution - 1);
+            const yStep = (yRange[1] - yRange[0]) / (resolution - 1);
+            
+            for (let i = 0; i < resolution; i++) {
+                const xVal = xRange[0] + i * xStep;
+                const row = [];
+                x.push(xVal);
+                
+                for (let j = 0; j < resolution; j++) {
+                    const yVal = yRange[0] + j * yStep;
+                    if (i === 0) y.push(yVal);
+                    
+                    const r = Math.sqrt(xVal*xVal + yVal*yVal);
+                    const zVal = r < 1e-10 ? 1.0 : Math.sin(r) / r;
+                    row.push(zVal);
+                }
+                
+                z.push(row);
+            }
+            
+            return { x, y, z };
+        }
+        
+        // Generate spiral data
+        function generateSpiralData(points) {
+            const x = [];
+            const y = [];
+            const z = [];
+            
+            for (let i = 0; i < points; i++) {
+                const t = 10.0 * i / points;
+                x.push(Math.sin(t) * t);
+                y.push(Math.cos(t) * t);
+                z.push(t);
+            }
+            
+            return { x, y, z };
+        }
+        
+        // Create color scale
+        const colorScale = [
+            [0, 'rgb(0,0,255)'],    // Blue
+            [0.25, 'rgb(0,255,255)'], // Cyan
+            [0.5, 'rgb(0,255,0)'],   // Green
+            [0.75, 'rgb(255,255,0)'], // Yellow
+            [1, 'rgb(255,0,0)']      // Red
+        ];
+        
+        // Plot 1: Sinc Function (Wireframe)
+        const sincData = generateSincData([-8, 8], [-8, 8], 50);
+        
+        const surface1 = {
+            type: 'surface',
+            x: sincData.x,
+            y: sincData.y,
+            z: sincData.z,
+            colorscale: colorScale,
+            showscale: true,
+            hidesurface: true,
+            contours: {
+                x: { show: true, color: 'rgb(0,0,255)', width: 2 },
+                y: { show: true, color: 'rgb(0,0,255)', width: 2 },
+                z: { show: true, color: 'rgb(0,0,255)', width: 2 }
+            },
+            name: 'Sinc Function'
+        };
+        
+        const layout1 = {
+            title: '3D Surface Plot Demo',
+            autosize: true,
+            scene: {
+                xaxis: { title: 'X Axis' },
+                yaxis: { title: 'Y Axis' },
+                zaxis: { title: 'Z Axis' },
+                camera: {
+                    eye: { x: 1.5, y: 1.5, z: 1 }
+                },
+                aspectmode: 'cube'
+            }
+        };
+        
+        Plotly.newPlot('plot1', [surface1], layout1);
+        
+        // Plot 2: 3D Spiral (Scatter)
+        const spiralData = generateSpiralData(100);
+        
+        const scatter = {
+            type: 'scatter3d',
+            x: spiralData.x,
+            y: spiralData.y,
+            z: spiralData.z,
+            mode: 'markers',
+            marker: {
+                size: 5,
+                color: spiralData.z,
+                colorscale: colorScale,
+                showscale: true
+            },
+            name: 'Spiral'
+        };
+        
+        const layout2 = {
+            title: '3D Scatter Plot Demo',
+            autosize: true,
+            scene: {
+                xaxis: { title: 'X Axis' },
+                yaxis: { title: 'Y Axis' },
+                zaxis: { title: 'Z Axis' },
+                camera: {
+                    eye: { x: 1.5, y: 1.5, z: 1 }
+                },
+                aspectmode: 'cube'
+            }
+        };
+        
+        Plotly.newPlot('plot2', [scatter], layout2);
+        
+        // Plot 3: Surface Style Comparison
+        const sincData2 = generateSincData([-8, 8], [-8, 8], 30);
+        
+        const solidSurface = {
+            type: 'surface',
+            x: sincData2.x,
+            y: sincData2.y,
+            z: sincData2.z,
+            colorscale: colorScale,
+            showscale: true,
+            name: 'Solid'
+        };
+        
+        const wireframeSurface = {
+            type: 'surface',
+            x: sincData2.x,
+            y: sincData2.y,
+            z: sincData2.z,
+            colorscale: colorScale,
+            showscale: false,
+            hidesurface: true,
+            contours: {
+                x: { show: true, color: 'rgb(0,0,255)', width: 2 },
+                y: { show: true, color: 'rgb(0,0,255)', width: 2 },
+                z: { show: false }
+            },
+            name: 'Wireframe'
+        };
+        
+        // Create points data for the points style
+        const pointsX = [];
+        const pointsY = [];
+        const pointsZ = [];
+        
+        for (let i = 0; i < sincData2.x.length; i += 2) {
+            for (let j = 0; j < sincData2.y.length; j += 2) {
+                pointsX.push(sincData2.x[i]);
+                pointsY.push(sincData2.y[j]);
+                pointsZ.push(sincData2.z[i][j]);
+            }
+        }
+        
+        const pointsSurface = {
+            type: 'scatter3d',
+            x: pointsX,
+            y: pointsY,
+            z: pointsZ,
+            mode: 'markers',
+            marker: {
+                size: 3,
+                color: pointsZ,
+                colorscale: colorScale,
+                showscale: false
+            },
+            name: 'Points'
+        };
+        
+        const contourSurface = {
+            type: 'surface',
+            x: sincData2.x,
+            y: sincData2.y,
+            z: sincData2.z,
+            colorscale: colorScale,
+            showscale: false,
+            contours: {
+                z: {
+                    show: true,
+                    usecolormap: true,
+                    project: { z: true },
+                    start: -0.2,
+                    end: 1.0,
+                    size: 0.1
+                }
+            },
+            name: 'Contour'
+        };
+        
+        const layout3 = {
+            title: 'Surface Style Comparison',
+            autosize: true,
+            scene: {
+                xaxis: { title: 'X Axis' },
+                yaxis: { title: 'Y Axis' },
+                zaxis: { title: 'Z Axis' },
+                camera: {
+                    eye: { x: 1.5, y: 1.5, z: 1 }
+                },
+                aspectmode: 'cube'
+            }
+        };
+        
+        Plotly.newPlot('plot3', [solidSurface, wireframeSurface, pointsSurface, contourSurface], layout3);
+    </script>
+</body>
+</html>

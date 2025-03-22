@@ -10,6 +10,10 @@ set(TEST_SOURCES
     test_numeric_solver.cpp
     test_lua_engine.cpp
     test_theme_manager.cpp
+    test_complex.cpp
+    test_matrix.cpp
+    test_statistics.cpp
+    test_units.cpp
 )
 
 # Create test executable

@@ -43,7 +43,10 @@ add_subdirectory(src)
 
 # Enable testing
 enable_testing()
-add_subdirectory(src/tests)
+add_subdirectory(tests)
+
+# Add examples
+add_subdirectory(examples)
 
 # Installation
 install(TARGETS RebelCALC

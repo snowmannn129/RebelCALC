@@ -242,6 +242,333 @@ public:
             return *result;
         });
         
+        // Add more advanced functions
+        
+        // Simplify expressions
+        registerFunction("simplify", [this](const std::vector<std::string>& args) {
+            if (args.size() < 1) {
+                return std::string("Usage: simplify(expression)");
+            }
+            
+            auto symbolicEngine = m_calculator->getSymbolicEngine();
+            if (!symbolicEngine) {
+                return std::string("Symbolic engine not available");
+            }
+            
+            auto result = symbolicEngine->simplify(args[0]);
+            if (!result) {
+                return std::string("Error simplifying expression");
+            }
+            
+            return *result;
+        });
+        
+        // Expand expressions
+        registerFunction("expand", [this](const std::vector<std::string>& args) {
+            if (args.size() < 1) {
+                return std::string("Usage: expand(expression)");
+            }
+            
+            auto symbolicEngine = m_calculator->getSymbolicEngine();
+            if (!symbolicEngine) {
+                return std::string("Symbolic engine not available");
+            }
+            
+            auto result = symbolicEngine->expand(args[0]);
+            if (!result) {
+                return std::string("Error expanding expression");
+            }
+            
+            return *result;
+        });
+        
+        // Factor expressions
+        registerFunction("factor", [this](const std::vector<std::string>& args) {
+            if (args.size() < 1) {
+                return std::string("Usage: factor(expression)");
+            }
+            
+            auto symbolicEngine = m_calculator->getSymbolicEngine();
+            if (!symbolicEngine) {
+                return std::string("Symbolic engine not available");
+            }
+            
+            auto result = symbolicEngine->factor(args[0]);
+            if (!result) {
+                return std::string("Error factoring expression");
+            }
+            
+            return *result;
+        });
+        
+        // Substitute variables
+        registerFunction("substitute", [this](const std::vector<std::string>& args) {
+            if (args.size() < 3) {
+                return std::string("Usage: substitute(expression, variable, replacement)");
+            }
+            
+            auto symbolicEngine = m_calculator->getSymbolicEngine();
+            if (!symbolicEngine) {
+                return std::string("Symbolic engine not available");
+            }
+            
+            auto result = symbolicEngine->substitute(args[0], args[1], args[2]);
+            if (!result) {
+                return std::string("Error substituting in expression");
+            }
+            
+            return *result;
+        });
+        
+        // Solve linear systems
+        registerFunction("solveLinearSystem", [this](const std::vector<std::string>& args) {
+            if (args.size() < 2) {
+                return std::string("Usage: solveLinearSystem(coefficients, constants)");
+            }
+            
+            auto numericSolver = m_calculator->getNumericSolver();
+            if (!numericSolver) {
+                return std::string("Numeric solver not available");
+            }
+            
+            // Parse coefficients and constants from strings
+            // This is a simplified implementation that expects specific formats
+            // In a real implementation, this would be more robust
+            
+            // Example format for coefficients: "[[1,2],[3,4]]"
+            // Example format for constants: "[5,6]"
+            
+            // For now, just return a placeholder result
+            return std::string("Linear system solving not fully implemented in Lua yet");
+        });
+        
+        // Find polynomial roots
+        registerFunction("findRoots", [this](const std::vector<std::string>& args) {
+            if (args.size() < 1) {
+                return std::string("Usage: findRoots(coefficients)");
+            }
+            
+            auto numericSolver = m_calculator->getNumericSolver();
+            if (!numericSolver) {
+                return std::string("Numeric solver not available");
+            }
+            
+            // Parse coefficients from string
+            // This is a simplified implementation that expects specific formats
+            // In a real implementation, this would be more robust
+            
+            // Example format for coefficients: "[1,2,3]" for x^2 + 2x + 3
+            
+            // For now, just return a placeholder result
+            return std::string("Polynomial root finding not fully implemented in Lua yet");
+        });
+        
+        // Find minimum of a function
+        registerFunction("findMinimum", [this](const std::vector<std::string>& args) {
+            if (args.size() < 4) {
+                return std::string("Usage: findMinimum(function, initialGuess, lowerBound, upperBound)");
+            }
+            
+            auto numericSolver = m_calculator->getNumericSolver();
+            if (!numericSolver) {
+                return std::string("Numeric solver not available");
+            }
+            
+            // Parse function and bounds from strings
+            // This is a simplified implementation that expects specific formats
+            // In a real implementation, this would be more robust
+            
+            // For now, just return a placeholder result
+            return std::string("Function minimization not fully implemented in Lua yet");
+        });
+        
+        // Find maximum of a function
+        registerFunction("findMaximum", [this](const std::vector<std::string>& args) {
+            if (args.size() < 4) {
+                return std::string("Usage: findMaximum(function, initialGuess, lowerBound, upperBound)");
+            }
+            
+            auto numericSolver = m_calculator->getNumericSolver();
+            if (!numericSolver) {
+                return std::string("Numeric solver not available");
+            }
+            
+            // Parse function and bounds from strings
+            // This is a simplified implementation that expects specific formats
+            // In a real implementation, this would be more robust
+            
+            // For now, just return a placeholder result
+            return std::string("Function maximization not fully implemented in Lua yet");
+        });
+        
+        // Set up Lua standard libraries and environment
+        
+        // Set up the math library
+        lua_getglobal(m_luaState, "math");
+        if (lua_isnil(m_luaState, -1)) {
+            lua_pop(m_luaState, 1);
+            lua_newtable(m_luaState);
+            lua_setglobal(m_luaState, "math");
+            lua_getglobal(m_luaState, "math");
+        }
+        
+        // Add constants to the math library
+        lua_pushnumber(m_luaState, M_PI);
+        lua_setfield(m_luaState, -2, "pi");
+        
+        lua_pushnumber(m_luaState, M_E);
+        lua_setfield(m_luaState, -2, "e");
+        
+        // Add additional math functions
+        
+        // math.factorial
+        lua_pushcfunction(m_luaState, [](lua_State* L) -> int {
+            int n = luaL_checkinteger(L, 1);
+            if (n < 0) {
+                return luaL_error(L, "factorial of negative number");
+            }
+            
+            lua_Integer result = 1;
+            for (int i = 2; i <= n; ++i) {
+                result *= i;
+            }
+            
+            lua_pushinteger(L, result);
+            return 1;
+        });
+        lua_setfield(m_luaState, -2, "factorial");
+        
+        // math.gcd
+        lua_pushcfunction(m_luaState, [](lua_State* L) -> int {
+            int a = luaL_checkinteger(L, 1);
+            int b = luaL_checkinteger(L, 2);
+            
+            // Euclidean algorithm
+            while (b != 0) {
+                int temp = b;
+                b = a % b;
+                a = temp;
+            }
+            
+            lua_pushinteger(L, a);
+            return 1;
+        });
+        lua_setfield(m_luaState, -2, "gcd");
+        
+        // math.lcm
+        lua_pushcfunction(m_luaState, [](lua_State* L) -> int {
+            int a = luaL_checkinteger(L, 1);
+            int b = luaL_checkinteger(L, 2);
+            
+            // Calculate GCD first
+            int gcd = a;
+            int tempB = b;
+            while (tempB != 0) {
+                int temp = tempB;
+                tempB = gcd % tempB;
+                gcd = temp;
+            }
+            
+            // LCM = (a * b) / gcd
+            lua_Integer lcm = (lua_Integer)a * b / gcd;
+            
+            lua_pushinteger(L, lcm);
+            return 1;
+        });
+        lua_setfield(m_luaState, -2, "lcm");
+        
+        // Clean up the stack
+        lua_pop(m_luaState, 1);
+        
+        // Create a calculator library
+        lua_newtable(m_luaState);
+        
+        // Add calculator functions
+        
+        // calculator.setVariable
+        lua_pushcfunction(m_luaState, [](lua_State* L) -> int {
+            // Get the calculator instance
+            lua_getfield(L, LUA_REGISTRYINDEX, "calculator");
+            Calculator* calculator = static_cast<Calculator*>(lua_touserdata(L, -1));
+            lua_pop(L, 1);
+            
+            // Get the arguments
+            const char* name = luaL_checkstring(L, 1);
+            double value = luaL_checknumber(L, 2);
+            
+            // Set the variable
+            bool success = calculator->setVariable(name, value);
+            
+            // Return success or failure
+            lua_pushboolean(L, success);
+            return 1;
+        });
+        lua_setfield(m_luaState, -2, "setVariable");
+        
+        // calculator.getVariable
+        lua_pushcfunction(m_luaState, [](lua_State* L) -> int {
+            // Get the calculator instance
+            lua_getfield(L, LUA_REGISTRYINDEX, "calculator");
+            Calculator* calculator = static_cast<Calculator*>(lua_touserdata(L, -1));
+            lua_pop(L, 1);
+            
+            // Get the arguments
+            const char* name = luaL_checkstring(L, 1);
+            
+            // Get the variable
+            auto value = calculator->getVariable(name);
+            
+            // Return the value or nil
+            if (value) {
+                lua_pushnumber(L, *value);
+            } else {
+                lua_pushnil(L);
+            }
+            
+            return 1;
+        });
+        lua_setfield(m_luaState, -2, "getVariable");
+        
+        // calculator.hasVariable
+        lua_pushcfunction(m_luaState, [](lua_State* L) -> int {
+            // Get the calculator instance
+            lua_getfield(L, LUA_REGISTRYINDEX, "calculator");
+            Calculator* calculator = static_cast<Calculator*>(lua_touserdata(L, -1));
+            lua_pop(L, 1);
+            
+            // Get the arguments
+            const char* name = luaL_checkstring(L, 1);
+            
+            // Check if the variable exists
+            bool exists = calculator->hasVariable(name);
+            
+            // Return the result
+            lua_pushboolean(L, exists);
+            return 1;
+        });
+        lua_setfield(m_luaState, -2, "hasVariable");
+        
+        // calculator.clearVariables
+        lua_pushcfunction(m_luaState, [](lua_State* L) -> int {
+            // Get the calculator instance
+            lua_getfield(L, LUA_REGISTRYINDEX, "calculator");
+            Calculator* calculator = static_cast<Calculator*>(lua_touserdata(L, -1));
+            lua_pop(L, 1);
+            
+            // Clear the variables
+            calculator->clearVariables();
+            
+            return 0;
+        });
+        lua_setfield(m_luaState, -2, "clearVariables");
+        
+        // Set the calculator library as a global
+        lua_setglobal(m_luaState, "calculator");
+        
+        // Store the calculator instance in the registry
+        lua_pushlightuserdata(m_luaState, m_calculator.get());
+        lua_setfield(m_luaState, LUA_REGISTRYINDEX, "calculator");
+        
         return true;
     }
     

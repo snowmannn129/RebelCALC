@@ -31,6 +31,71 @@ TEST_F(SymbolicEngineTest, SimplifyExpression) {
     result = symbolicEngine->simplify("x * 0");
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ("0", *result);
+    
+    result = symbolicEngine->simplify("x - 0");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("x", *result);
+    
+    result = symbolicEngine->simplify("0 - x");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("-x", *result);
+    
+    result = symbolicEngine->simplify("x / 1");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("x", *result);
+    
+    result = symbolicEngine->simplify("0 / x");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("0", *result);
+    
+    result = symbolicEngine->simplify("x^0");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("1", *result);
+    
+    result = symbolicEngine->simplify("x^1");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("x", *result);
+    
+    result = symbolicEngine->simplify("0^x");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("0", *result);
+    
+    result = symbolicEngine->simplify("1^x");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("1", *result);
+    
+    result = symbolicEngine->simplify("log(1)");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("0", *result);
+    
+    result = symbolicEngine->simplify("log(e)");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("1", *result);
+    
+    result = symbolicEngine->simplify("sin(0)");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("0", *result);
+    
+    result = symbolicEngine->simplify("cos(0)");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("1", *result);
+    
+    // Test pattern matching simplifications
+    result = symbolicEngine->simplify("2*x + 3*x");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("5*x", *result);
+    
+    result = symbolicEngine->simplify("5*x - 2*x");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("3*x", *result);
+    
+    result = symbolicEngine->simplify("x^2 * x^3");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("x^5", *result);
+    
+    result = symbolicEngine->simplify("(x^2)^3");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("x^6", *result);
 }
 
 TEST_F(SymbolicEngineTest, ExpandExpression) {
@@ -61,6 +126,35 @@ TEST_F(SymbolicEngineTest, SolveEquation) {
     result = symbolicEngine->solve("2*x = 10", "x");
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ("5", *result);
+    
+    result = symbolicEngine->solve("x - 3 = 7", "x");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("10", *result);
+    
+    result = symbolicEngine->solve("3*x + 2 = 14", "x");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("4", *result);
+    
+    result = symbolicEngine->solve("x^2 = 4", "x");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("x = 2 or x = -2", *result);
+    
+    result = symbolicEngine->solve("2*x^2 = 8", "x");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("x = 2 or x = -2", *result);
+    
+    result = symbolicEngine->solve("x^2 + 2*x + 1 = 0", "x");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("-1", *result);
+    
+    // Invalid equation (no equals sign)
+    result = symbolicEngine->solve("x + 5", "x");
+    EXPECT_FALSE(result.has_value());
+    
+    // Equation with no solution
+    result = symbolicEngine->solve("x^2 + 1 = 0", "x");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ("No real solutions", *result);
 }
 
 TEST_F(SymbolicEngineTest, DifferentiateExpression) {
